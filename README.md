@@ -24,8 +24,8 @@ A simple xBar application to provide a list of incidents, popup notifications, a
 	* Notify
 
 * External requirements
-Mac: afplay (included with MacOS)
-Linux: sox, libsox-fmt-mp3
+	* Mac: afplay (included with MacOS)
+	* Linux: sox, libsox-fmt-mp3
 
 ### Installing
 
