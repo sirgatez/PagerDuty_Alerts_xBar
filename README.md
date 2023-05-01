@@ -11,16 +11,16 @@ A simple xBar application to provide a list of incidents, popup notifications, a
 ### Dependencies
 Python 3.x
 
-Python Libraries:
-* Minimium
-pytz
-requests
+* Python Libraries:
+	* Minimium
+	* pytz
+	* requests
 
 * Mac Full
-pyobjc
+	* pyobjc
 
 * Linux Full
-Notify
+	* Notify
 
 * External requirements
 Mac: afplay (included with MacOS)
