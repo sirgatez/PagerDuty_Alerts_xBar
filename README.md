@@ -10,6 +10,7 @@ A simple xBar application to provide a list of incidents, popup notifications, a
 
 ### Dependencies
 Python 3.x
+Argos (Linux) or xBar (MacOS)
 
 * Python Libraries:
 	* Minimium
