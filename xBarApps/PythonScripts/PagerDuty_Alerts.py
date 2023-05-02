@@ -269,7 +269,7 @@ def print_oncall_status_debug(response, local_time_fmt, local_time_zone):
 
 
 def print_xbar_oncall_status(response, pd_company, pd_user):
-    user_url = "https://{0}.pagerduty.com/users/{0}/on-call/month".format(pd_company, pd_user)
+    user_url = "https://{0}.pagerduty.com/users/{1}/on-call/month".format(pd_company, pd_user)
     if "active" in response and response["active"]:
         if response['active'] and (response['utc_raw_start'] < datetime.utcnow() < response['utc_raw_end']):
             print("Status: Oncall ☎️ | color='{0}' href='{1}'".format(colors["menu"], user_url))
@@ -278,7 +278,7 @@ def print_xbar_oncall_status(response, pd_company, pd_user):
             #print("-- Teams: | color='{0}'".format(colors["info"]))  # Looked better without this as a submenu
             print("--")
             for team in response["teams"]:
-                team_url = "https://{0}.pagerduty.com/schedules/{0}".format(pd_company, team)
+                team_url = "https://{0}.pagerduty.com/schedules/{1}".format(pd_company, team)
                 print("-- {0} | color='{1}' href='{2}'".format(
                     response["teams"][team]["name"], colors["info"], team_url))
                 print("---- {0} | color='{1}'".format(response["teams"][team]["local_fmt_start"], colors["info"]))
