@@ -2,6 +2,8 @@
 
 Welcome! I wrote this script to provide quick access to PagerDuty notification events, as well as another audible/visual notification when a new incident is created.
 
+Original Repository: https://github.com/sirgatez/PagerDuty_Alerts_xBar
+
 ## Description
 
 A simple xBar application to provide a list of incidents, popup notifications, and audible alerts for new triggered incidents.
