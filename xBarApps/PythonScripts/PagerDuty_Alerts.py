@@ -306,7 +306,7 @@ if __name__ == '__main__':
     pagerduty_json = ""
     pagerduty_json_last = ""
     error_msg = ""
-    pagerduty_last_reply_file = "pagerduty.lastreply"  # Stored in same folder as script
+    pagerduty_last_reply_file = "pagerduty_alerts.lastreply"  # Stored in same folder as script
 
     ################################
     ### Begin User Configuration ###
