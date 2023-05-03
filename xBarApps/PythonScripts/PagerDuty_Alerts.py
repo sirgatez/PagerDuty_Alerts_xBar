@@ -336,7 +336,6 @@ if __name__ == '__main__':
 
     oncall_response = {"active": False}
 
-    pagerduty_oncall_schedule = fetch_pagerduty_oncall_schedule(PAGER_DUTY_TOKEN, PAGER_DUTY_USER)
     try:
         pagerduty_oncall_schedule = fetch_pagerduty_oncall_schedule(PAGER_DUTY_TOKEN, PAGER_DUTY_USER)
         code = str(pagerduty_oncall_schedule.status_code)[0:1]
