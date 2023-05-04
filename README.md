@@ -14,15 +14,14 @@ A simple xBar application to provide a list of incidents, popup notifications, a
 * Python 3.x
 * Argos (Linux) or xBar (MacOS)
 
-* Python Libraries:
-	* Minimium
+* Python Libraries - Minimium:
 	* pytz
 	* requests
 
-* Mac Full
+* Python Libraries - Mac Optional
 	* pyobjc
 
-* Linux Full
+* Python Libraries - Linux Optional
 	* Notify
 
 * External requirements
@@ -43,7 +42,7 @@ If you encounter any problems or have any suggestions for improvements please do
 
 ## Authers
 
-Joshua Briefman (https://www.linkedin.com/in/sirgatez/)
+Joshua Briefman (https://www.linkedin.com/in/sirgatez/) [sirgatez at gmail dot com]
 
 ## Version History
 
