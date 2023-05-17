@@ -1,4 +1,12 @@
 #!/usr/bin/env zsh
+# <bitbar.title>PagerDuty Alerts</bitbar.title>
+# <bitbar.version>v0.1</bitbar.version>
+# <bitbar.author>Joshua Briefman</bitbar.author>
+# <bitbar.author.github>sirgatez</bitbar.author.github>
+# <bitbar.desc>Widget PagerDuty alerts.</bitbar.desc>
+# <bitbar.dependencies>bash/zsh and Python 3</bitbar.dependencies>
+# <bitbar.image>N/A</bitbar.image>
+# <bitbar.abouturl>https://github.com/sirgatez/PagerDuty_Alerts_xBar</bitbar.abouturl>
 
 # This wrapper is needed to execute Python scripts because the default path
 # on MacOS does NOT include paths added in profile, or .zshrc files.

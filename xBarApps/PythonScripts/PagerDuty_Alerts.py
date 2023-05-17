@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# <bitbar.title>PagerDuty Alerts</bitbar.title>
+# <bitbar.version>v0.1</bitbar.version>
+# <bitbar.author>Joshua Briefman</bitbar.author>
+# <bitbar.author.github>sirgatez</bitbar.author.github>
+# <bitbar.desc>Widget PagerDuty alerts.</bitbar.desc>
+# <bitbar.dependencies>bash/zsh and Python 3</bitbar.dependencies>
+# <bitbar.image>N/A</bitbar.image>
+# <bitbar.abouturl>https://github.com/sirgatez/PagerDuty_Alerts_xBar</bitbar.abouturl>
+
 from datetime import datetime
 import json
 import os
