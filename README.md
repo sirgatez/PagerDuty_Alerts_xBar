@@ -24,7 +24,7 @@ A simple xBar application to provide a list of incidents, popup notifications, a
 * Python Libraries - Linux Optional
 	* Notify
 
-* External requirements
+* External requirements (Optional)
 	* Mac: afplay (included with MacOS)
 	* Linux: sox, libsox-fmt-mp3
 
