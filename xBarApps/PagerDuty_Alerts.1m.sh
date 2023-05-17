@@ -20,13 +20,13 @@ if [[ -d ${folder} ]]; then
 			echo "${output}"
 			exit 0
 		else
-			error_msg = "Failed to execute script successfully ${script}."
+			error_msg="Failed to execute script successfully ${script}."
 		fi
 	else
-		error_msg = "Failed to find script ${script}."
+		error_msg="Failed to find script ${script}."
 	fi
 else
-	error_msg = "Failed to find folder ${folder}."
+	error_msg="Failed to find folder ${folder}."
 fi
 
 echo "☠️"
