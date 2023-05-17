@@ -12,7 +12,11 @@ A simple xBar application to provide a list of incidents, popup notifications, a
 
 ### Dependencies
 * Python 3.x
-* Argos (Linux) or xBar (MacOS)
+
+* One of the following
+	* Argos (Linux) https://github.com/p-e-w/argos
+	* SwiftBar (MacOS) https://github.com/swiftbar/SwiftBar
+	* xBar (MacOS) (Formally BitBar) https://github.com/matryer/xbar/
 
 * Python Libraries - Minimium:
 	* pytz
