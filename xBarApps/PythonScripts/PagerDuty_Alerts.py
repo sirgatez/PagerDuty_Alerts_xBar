@@ -9,13 +9,13 @@
 # <bitbar.image>N/A</bitbar.image>
 # <bitbar.abouturl>https://github.com/sirgatez/PagerDuty_Alerts_xBar</bitbar.abouturl>
 
-from datetime import datetime
 import json
 import os
 import pprint
 import pytz
 import requests
 import subprocess
+from datetime import datetime
 from pytz import timezone
 from sys import platform, version_info, modules, stderr
 from requests.adapters import HTTPAdapter
@@ -120,7 +120,9 @@ def fetch_pagerduty_oncall_schedule(dev_token, user_id):
 
 
 def load_last_pagerduty_reply(filename):
-    return json.loads(filename)
+    with open(filename, 'r') as file_handle:
+        json_data = "".join(file_handle.readlines())
+    return json.loads(json_data)
 
 
 def save_last_pagerduty_reply(filename, json_data):
@@ -211,10 +213,10 @@ def notify_incidents(incidents, incidents_last, alert_popup, alert_sound):
 
 def get_oncall_status_from_json(json_data, local_time_fmt, local_time_zone):
     pagerduty_format = "%Y-%m-%dT%H:%M:%SZ"  # PagerDuty time format
+    oncall_start = ''
+    oncall_end = ''
     response = {
         "active": False,
-        "utc_raw_start": '',
-        "utc_raw_end": '',
         "utc_fmt_start": '',
         "utc_fmt_end": '',
         "local_fmt_start": '',
@@ -229,62 +231,38 @@ def get_oncall_status_from_json(json_data, local_time_fmt, local_time_zone):
             response["teams"][schedule["schedule"]["id"]] = {
                 "id": schedule["schedule"]["id"],
                 "name": schedule["schedule"]["summary"],
-                "utc_raw_start": utc_raw_start,
-                "utc_raw_end": utc_raw_end,
                 "utc_fmt_start": datetime.strptime(schedule["start"], pagerduty_format).strftime(local_time_fmt),
                 "utc_fmt_end": datetime.strptime(schedule["end"], pagerduty_format).strftime(local_time_fmt),
                 "local_fmt_start": get_local_time_from_utc(utc_raw_start, local_time_fmt, local_time_zone),
                 "local_fmt_end": get_local_time_from_utc(utc_raw_end, local_time_fmt, local_time_zone)
             }
-
             start = datetime.strptime(schedule["start"], pagerduty_format)
             end = datetime.strptime(schedule["end"], pagerduty_format)
-            if response["utc_raw_start"] == "" or response["utc_raw_end"] == '':
-                response["utc_raw_start"] = start
-                response["utc_raw_end"] = end
-                response["active"] = True
+            if oncall_start == "" or oncall_end == '':
+                oncall_start = start
+                oncall_end = end
             else:
-                if start < response["utc_raw_start"]:
-                    response["utc_raw_start"] = start
-                if end > response["utc_raw_end"]:
-                    response["utc_raw_end"] = end
-            response["utc_fmt_start"] = response["utc_raw_start"].strftime(local_time_fmt)
-            response["utc_fmt_end"] = response["utc_raw_end"].strftime(local_time_fmt)
-            response["local_fmt_start"] = \
-                get_local_time_from_utc(response["utc_raw_start"], local_time_fmt, local_time_zone)
-            response["local_fmt_end"] = \
-                get_local_time_from_utc(response["utc_raw_end"], local_time_fmt, local_time_zone)
+                if start < oncall_start:
+                    oncall_start = start
+                if end > oncall_end:
+                    oncall_end = end
+            response["utc_fmt_start"] = oncall_start.strftime(local_time_fmt)
+            response["utc_fmt_end"] = oncall_end.strftime(local_time_fmt)
+            response["local_fmt_start"] = get_local_time_from_utc(oncall_start, local_time_fmt, local_time_zone)
+            response["local_fmt_end"] = get_local_time_from_utc(oncall_end, local_time_fmt, local_time_zone)
+
+    if oncall_start < datetime.utcnow() < oncall_end:
+        response['active'] = True
     return response
-
-
-def print_oncall_status_debug(response, local_time_fmt, local_time_zone):
-    if response['active']:
-        print()
-        print("Original")
-        print("Start UTC: {0}".format(response['utc_fmt_start']))
-        print("End UTC:  {0}".format(response['utc_fmt_end']))
-        print("Now:  {0}".format(datetime.utcnow().strftime(local_time_fmt)))
-        print()
-        print("Testing")
-
-        print("Start PST: " + response['local_fmt_start'])
-        print("End PST: " + response['local_fmt_end'])
-        print("Now PST: " + get_local_time_from_utc(datetime.utcnow(), local_time_fmt, local_time_zone))
-
-    if response['active'] and (response['utc_raw_start'] < datetime.utcnow() < response['utc_raw_end']):
-        print("You are oncall")
-    else:
-        print("You are not oncall")
 
 
 def print_xbar_oncall_status(response, pd_company, pd_user):
     user_url = "https://{0}.pagerduty.com/users/{1}/on-call/month".format(pd_company, pd_user)
     if "active" in response and response["active"]:
-        if response['active'] and (response['utc_raw_start'] < datetime.utcnow() < response['utc_raw_end']):
+        if response['active']:
             print("Status: Oncall ☎️ | color='{0}' href='{1}'".format(colors["menu"], user_url))
             print("-- Start: {0} | color='{1}'".format(response['local_fmt_start'], colors["info"]))
             print("--   End: {0} | color='{1}'".format(response['local_fmt_end'], colors["info"]))
-            #print("-- Teams: | color='{0}'".format(colors["info"]))  # Looked better without this as a submenu
             print("--")
             for team in response["teams"]:
                 team_url = "https://{0}.pagerduty.com/schedules/{1}".format(pd_company, team)
@@ -315,14 +293,15 @@ if __name__ == '__main__':
     pagerduty_json = ""
     pagerduty_json_last = ""
     error_msg = ""
-    pagerduty_last_reply_file = "pagerduty_alerts.lastreply"  # Stored in same folder as script
+    pagerduty_last_reply_oncall_file = "{0}.oncall.lastreply".format(APP)  # Stored in same folder as script
+    pagerduty_last_reply_incidents_file = "{0}.incidents.lastreply".format(APP)  # Stored in same folder as script
 
     ################################
     ### Begin User Configuration ###
     ################################
 
     # Authentication and User Config
-    PAGER_DUTY_COMPANY = "mycompany"  # mycompany.pagerduty.com
+    PAGER_DUTY_COMPANY = "MyCompany"  # mycompany.pagerduty.com
     PAGER_DUTY_TOKEN = "MyDevToken"  # Configure to your Dev Token
     PAGER_DUTY_USER = "MyUserID"  # Configure to your User ID.
 
@@ -336,8 +315,8 @@ if __name__ == '__main__':
     PAGER_DUTY_AUDIBLE_ALERTS = True  # Play alert sounds
 
     # Sound file to play when new alert is to triggered
-    PAGER_DUTY_ALERT_SOUND = "{0}/my_alert_sound.mp3".format(os.environ["HOME"])
     # Check out https://freesound.org
+    PAGER_DUTY_ALERT_SOUND = "{0}/my_alert_sound.mp3".format(os.environ["HOME"])
 
     ##############################
     ### End User Configuration ###
@@ -351,7 +330,7 @@ if __name__ == '__main__':
         if code == '2':
             oncall_response = get_oncall_status_from_json(
                 pagerduty_oncall_schedule.json(), PAGER_DUTY_DATE_FORMAT, PAGER_DUTY_TIMEZONE)
-            # print_oncall_status_debug(oncall_response, PAGER_DUTY_DATE_FORMAT, PAGER_DUTY_TIMEZONE)
+            save_last_pagerduty_reply(pagerduty_last_reply_oncall_file, oncall_response)
         elif code == "4":
             error_msg = "{0}: Unauthorized, please double check that your Dev Token is valid.".format(
                 pagerduty_reply.status_code)
@@ -361,13 +340,12 @@ if __name__ == '__main__':
         else:
             error_msg = "{0}: An unknown error has occurred.".format(pagerduty_reply.status_code)
     except Exception:
-        pass
-
-    try:
-        pagerduty_json_last = load_last_pagerduty_reply(pagerduty_last_reply_file)
-    except Exception:
-        # Error not notable to report. First run never has a last file.
-        pass
+        stale_data = True
+        try:
+            oncall_response = load_last_pagerduty_reply(pagerduty_last_reply_oncall_file)
+        except Exception:
+            # Error not notable to report. First run never has a last file.
+            pass
 
     try:
         # Invalid user will not return an error, it just won't have any incidents.
@@ -375,7 +353,7 @@ if __name__ == '__main__':
         code = str(pagerduty_reply.status_code)[0:1]
         if code == "2":
             pagerduty_json = pagerduty_reply.json()
-            save_last_pagerduty_reply(pagerduty_last_reply_file, pagerduty_json)
+            save_last_pagerduty_reply(pagerduty_last_reply_incidents_file, pagerduty_json)
         else:
             if code == "4":
                 error_msg = "{0}: Unauthorized, please double check that your Dev Token is valid.".format(
@@ -388,7 +366,11 @@ if __name__ == '__main__':
             raise Exception("Unexpected response from server. Loading stale data.")
     except Exception:
         stale_data = True
-        pagerduty_json = pagerduty_json_last  # Load last as current if failed to get current.
+        try:
+            pagerduty_json = load_last_pagerduty_reply(pagerduty_last_reply_incidents_file)
+        except Exception:
+            # Error not notable to report. First run never has a last file.
+            pass
 
     pd_incidents = get_incidents_from_json(pagerduty_json)
     pd_incidents_last = get_incidents_from_json(pagerduty_json_last)
@@ -404,14 +386,12 @@ if __name__ == '__main__':
         else:
             print("📟💤")  # Show offcall icon
     print("---")
-
-    print_xbar_oncall_status(oncall_response, PAGER_DUTY_COMPANY, PAGER_DUTY_USER)
-
     if stale_data:
         print("WARNING: Data is stale, unable to update.")
         if error_msg != "":
             print(error_msg)
 
+    print_xbar_oncall_status(oncall_response, PAGER_DUTY_COMPANY, PAGER_DUTY_USER)
     print_xbar_incidents(pd_incidents)
 
     # Play audible alert for unacked messages last because it will delay before exit.
