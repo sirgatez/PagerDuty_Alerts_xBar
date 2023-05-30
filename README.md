@@ -11,6 +11,7 @@ A simple xBar application to provide a list of incidents, popup notifications, a
 ## Getting Started
 
 ### Dependencies
+
 * Python 3.x
 
 * One of the following
@@ -31,6 +32,13 @@ A simple xBar application to provide a list of incidents, popup notifications, a
 * External requirements (Optional)
 	* Mac: afplay (included with MacOS)
 	* Linux: sox, libsox-fmt-mp3
+
+### Installing Python Dependancies
+
+pip3 install requests
+pip3 install pytz
+
+pip3 install pyobjc  # Optional
 
 ### Installing
 
