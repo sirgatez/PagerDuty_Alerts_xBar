@@ -251,7 +251,7 @@ def get_oncall_status_from_json(json_data, local_time_fmt, local_time_zone):
             response["local_fmt_start"] = get_local_time_from_utc(oncall_start, local_time_fmt, local_time_zone)
             response["local_fmt_end"] = get_local_time_from_utc(oncall_end, local_time_fmt, local_time_zone)
 
-    if oncall_start < datetime.utcnow() < oncall_end:
+    if json_data["oncalls"] and oncall_start < datetime.utcnow() < oncall_end:
         response['active'] = True
     return response
 
